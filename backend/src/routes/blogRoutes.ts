@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
 import { authMiddleware, initPrismaClient } from '../middlewares/userMiddleware';
-import { blogPostSchema, blogPostType, updateBlogPostSchema, updateBlogType } from '@ashubh/medium-com';
+import { blogPostSchema, blogPostType, updateBlogPostSchema, updateBlogType } from '../../../cmn/dist/index';
 
 const blogRouter = new Hono<{
     Bindings: {
@@ -16,7 +16,7 @@ const blogRouter = new Hono<{
 blogRouter.use('/*', authMiddleware);
 blogRouter.use('/*', initPrismaClient);
 
-blogRouter.post('/', async (c) => {
+blogRouter.post('/publish', async (c) => {
     const prisma = c.get('prisma');
     const userId = c.get('userId');
 
@@ -25,16 +25,29 @@ blogRouter.post('/', async (c) => {
 
     if(!parseResponse.success) {
         console.log(parseResponse.error);
+        let issues : string[] = [];
+
+        parseResponse.error.issues.map((issue) => {
+            issues.push(issue.message);
+        });
+
         return c.json({
-            msg: parseResponse.error.issues[0].message
-        }, 411)
+            msg: issues
+        }, 411);
     }
 
-    const post = await prisma.post.create({
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('en-US', {
+        day: 'numeric', month: 'short', year: 'numeric'
+    });
+
+    await prisma.post.create({
         data: {
             title: blogDataBody.title,
             content: blogDataBody.content,
-            authorId: userId
+            authorId: userId,
+            createdAt: formattedDate,
+            published: blogDataBody.isPublished
         }
     });
 
@@ -52,9 +65,15 @@ blogRouter.put('/', async (c) => {
 
     if(!parseResponse.success) {
         console.log(parseResponse.error);
+        let issues : string[] = [];
+
+        parseResponse.error.issues.map((issue) => {
+            issues.push(issue.message);
+        });
+
         return c.json({
-            msg: parseResponse.error.issues[0].message
-        }, 411)
+            msg: issues
+        }, 411);
     }
 
     await prisma.post.update({
@@ -71,14 +90,54 @@ blogRouter.put('/', async (c) => {
     return c.text('Updated post');
 });
 
+blogRouter.get('/drafts', async(c) => {
+    const prisma = c.get('prisma');
+    const userId = c.get('userId');
+
+    try {
+        const posts = await prisma.post.findMany({
+            where: {
+                authorId: userId,
+                published: false
+            },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                createdAt: true,
+            }
+        });
+
+        console.log('Posts ', posts);
+
+        return c.json({
+            drafts: posts
+        }, 200);
+
+    } catch (err) {
+        return c.json({
+            msg: 'Unable to get drafts'
+        }, 200)
+    }
+});
+
 blogRouter.get('/bulk', async (c) => {
     const prisma = c.get('prisma');
 
     const posts = await prisma.post.findMany({
+        where: {
+            published: true
+        },
         select: {
+            author: {
+                select: {
+                    name: true
+                }
+            },
+            id: true,
             title: true,
             content: true,
-            published: true
+            createdAt: true
         }
     });
 
@@ -87,9 +146,9 @@ blogRouter.get('/bulk', async (c) => {
     }, 200);
 });
 
-blogRouter.get('/', async (c) => {
+blogRouter.get('/:id', async (c) => {
     const prisma = c.get('prisma');
-    const postId = c.req.query('id');
+    const postId = c.req.param('id');
 
     if(!postId){
         return c.text('Unable to find id query parameter');
@@ -100,9 +159,16 @@ blogRouter.get('/', async (c) => {
             id: parseInt(postId)
         },
         select: {
+            author: {
+                select: {
+                    name: true
+                }
+            },
+            id: true,
             title: true,
             content: true,
-            published: true
+            published: true,
+            createdAt: true
         }
     });
 

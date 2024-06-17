@@ -46,7 +46,35 @@ async function initPrismaClient(c : Context, next : Next){
     }
 }
 
+async function findUser(c: Context, next: Next){
+    try {
+        const userData = await c.req.json();
+        const prisma = c.get('prisma');
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { name: userData.name },
+                    { email: userData.email },
+                ]
+            }
+        });
+
+        if(user){
+            return c.json({
+                msg: ["Username/Email already taken"]
+            }, 411);
+        }
+
+        await next();
+
+    } catch (err) {
+        console.log(err);
+        return c.text("Unable to check vacancy", 400);
+    }
+}
+
 export {
     authMiddleware,
-    initPrismaClient
+    initPrismaClient,
+    findUser
 }
