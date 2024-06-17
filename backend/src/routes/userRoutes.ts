@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
 import { sign } from 'hono/jwt';
-import { UserCredentialsSchema, UserCredentialsType, UserAuthSchema } from '@ashubh/medium-com';
-import { initPrismaClient } from '../middlewares/userMiddleware';
+import { UserCredentialsSchema, UserCredentialsType, UserAuthSchema } from '@ashubh/mid-cmn';
+import { initPrismaClient, findUser } from '../middlewares/userMiddleware';
 
 const userRouter = new Hono<{
     Bindings: {
@@ -16,21 +16,26 @@ const userRouter = new Hono<{
 
 userRouter.use('/*', initPrismaClient);
 
-userRouter.post('/signup', async (c) => {
+userRouter.post('/signup', findUser, async (c) => {
     const prisma = c.get('prisma');
 
     const userCredentialsBody : UserCredentialsType = await c.req.json();
     const parseResponse = UserCredentialsSchema.safeParse(userCredentialsBody);
 
     if(!parseResponse.success) { 
-      console.log(parseResponse);
+      console.log(parseResponse.error);
+      let issues : string[] = [];
+
+      parseResponse.error.issues.map((issue) => {
+        issues.push(issue.message);
+      });
+
       return c.json({
-        msg: parseResponse.error.issues[0].message
+        msg: issues
       }, 411);
     }
 
     try {
-        
         const user = await prisma.user.create({
           data: {
             name: userCredentialsBody.name,
@@ -41,7 +46,6 @@ userRouter.post('/signup', async (c) => {
            id: true
           }
         })
-
         const token = await sign({ id: user.id }, c.env.JWT_KEY);
 
         return c.json({
@@ -69,8 +73,14 @@ userRouter.post('/signin', async (c) => {
   
     if(!parseResponse.success) {
       console.log(parseResponse.error);
+      let issues : string[] = [];
+
+      parseResponse.error.issues.map((issue) => {
+        issues.push(issue.message);
+      });
+
       return c.json({
-        msg: parseResponse.error.issues[0].message
+        msg: issues
       }, 411);
   
     }
@@ -88,10 +98,10 @@ userRouter.post('/signin', async (c) => {
   
       if(!user) {
         return c.json({
-          msg: "Invalid Username or Password"
+          msg: ["Invalid Username / Password"]
         }, 411)
       }
-      
+
       console.log(user);
       const token = await sign({ id: user.id }, c.env.JWT_KEY);
       console.log(token);
@@ -104,7 +114,7 @@ userRouter.post('/signin', async (c) => {
     } catch (err) {
       console.log(err);
       return c.json({
-        msg: "Error while signing in"
+        msg: ["Error while signing in"]
       }, 411)
   
     }

@@ -5,9 +5,12 @@
   },
   "dependencies": {
     "@ashubh/medium-com": "^1.0.0",
+    "@ashubh/mid-cmn": "^1.0.1",
     "@prisma/client": "^5.15.0",
     "@prisma/extension-accelerate": "^1.1.0",
+    "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
+    "cors": "^2.8.4",
     "hono": "^4.4.4",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^5.15.0"
