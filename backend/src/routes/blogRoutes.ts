@@ -142,7 +142,7 @@ blogRouter.get('/bulk', async (c) => {
     });
 
     return c.json({
-        allBlogs: posts
+        allBlogs: posts.reverse()
     }, 200);
 });
 

@@ -4,6 +4,7 @@ import { sidebarAtom } from '../../states/sidebar';
 import { useRecoilState} from 'recoil';
 import { useMemo } from 'react';
 import { useGetDraftBlogs } from '../../states/getBlogs';
+import { htmlToString } from '../../methods/htmlToString';
 
 export default function DraftBlogs(){
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
@@ -40,7 +41,7 @@ function AllDraftBlogs(){
         {
             data.drafts.map((draft) => {
                 return <div key={key++} className='m-[5px]'>
-                    <DraftBlogCard createdAt={draft.createdAt} title={draft.title} content={draft.content} />
+                    <DraftBlogCard createdAt={draft.createdAt} title={draft.title} content={htmlToString(draft.content)} />
                 </div>
             })   
         }
