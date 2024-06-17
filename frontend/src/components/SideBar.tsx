@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { RiLogoutCircleLine } from "react-icons/ri";
 
 interface ToggleSideBarType {
-    toggleSideBar: Function;
+    toggleSideBar: () => void
 }
 
 export function SideBar({toggleSideBar}: ToggleSideBarType){
