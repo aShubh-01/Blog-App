@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { useGetAllBlogs }  from '../../states/getBlogs';
@@ -14,6 +14,10 @@ export default function Blogs(){
     function toggleSideBar(){
         setSideBar((prev) => !prev);
     }
+
+    useEffect(() => {
+        if(sideBar == true) toggleSideBar();
+    }, [])
 
     return <div>
         <section className={`fixed top-0`}>

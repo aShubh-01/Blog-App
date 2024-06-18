@@ -8,31 +8,65 @@ import { BACKEND_URL } from './config';
 
 export default function QuillEditor(){
     const isSmallScreen = useMediaQuery('(max-width:640px)')
-    const [content, setContent] = useState('');
-    const [title, setTitle] = useState('');
+    const [content, setContent] = useState(localStorage.getItem('content') || '');
+    const [title, setTitle] = useState(localStorage.getItem('title') || '');
     const navigate = useNavigate();
+
+    const modules = {
+        toolbar: [
+            [{'header': [1, 2, 3]}, {'font': []}],
+            [{'list': 'ordered'}, {'list': 'bullet'}],
+            ['bold', 'italic', 'underline'],
+            ['link'],
+            ['clean']
+        ]
+    }
 
     const publishPost = async() => {
         try {
-            const response = await axios({
-                url: `${BACKEND_URL}/api/v1/blog/publish`,
-                method: 'POST',
-                headers: {
-                    'Content-Type': "application/json",
-                    'Authorization': localStorage.getItem('token')
-                },
-                data: {
-                    title: title,
-                    content: content,
-                    isPublished: true
+            if(localStorage.getItem('id')) {
+
+                const response = await axios({
+                    url: `${BACKEND_URL}/api/v1/blog`,
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': "application/json",
+                        'Authorization': localStorage.getItem('token')
+                    },
+                    data: {
+                        id: parseInt(localStorage.getItem('id')),
+                        title: title,
+                        content: content,
+                        isPublished: true
+                    }
+                });
+
+                if(response.status == 200){
+                    localStorage.removeItem('title');
+                    localStorage.removeItem('content');
+                    localStorage.removeItem('id');
+                    navigate('/blogs');
                 }
-            });
 
-            if(response.status == 200){
-                navigate('/blog');
+            } else {
+                const response = await axios({
+                    url: `${BACKEND_URL}/api/v1/blog/publish`,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': "application/json",
+                        'Authorization': localStorage.getItem('token')
+                    },
+                    data: {
+                        title: title,
+                        content: content,
+                        isPublished: true
+                    }
+                });
+    
+                if(response.status == 200){
+                    navigate('/blogs');
+                }
             }
-
-            console.log(response);
 
         } catch (err) {
             console.error(err);
@@ -41,34 +75,59 @@ export default function QuillEditor(){
 
     const saveDraft = async() => {
         try {
-            const response = await axios({
-                url: `${BACKEND_URL}/api/v1/blog/publish`,
-                method: 'POST',
-                headers: {
-                    'Content-Type': "application/json",
-                    'Authorization': localStorage.getItem('token')
-                },
-                data: {
-                    title: title,
-                    content: content,
-                    isPublished: false
+            if(localStorage.getItem('id')) {
+                const response = await axios({
+                    url: `${BACKEND_URL}/api/v1/blog`,
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': "application/json",
+                        'Authorization': localStorage.getItem('token')
+                    },
+                    data: {
+                        id: parseInt(localStorage.getItem('id')),
+                        title: title,
+                        content: content,
+                        isPublished: false
+                    }
+                });
+    
+                if(response.status == 200){
+                    localStorage.removeItem('title');
+                    localStorage.removeItem('content');
+                    localStorage.removeItem('id');
+                    navigate('/drafts');
                 }
-            });
 
-            if(response.status == 200){
-                navigate('/drafts');
+            } else {
+                const response = await axios({
+                    url: `${BACKEND_URL}/api/v1/blog/publish`,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': "application/json",
+                        'Authorization': localStorage.getItem('token')
+                    },
+                    data: {
+                        title: title,
+                        content: content,
+                        isPublished: false
+                    }
+                });
+    
+                if(response.status == 200){
+                    navigate('/drafts');
+                }
             }
-            
+
         } catch (err) {
             console.error('Error', err);
         }
     }
 
-    return <div>
+    return <div className='mt-[60px] md:mx-[230px]'>
         <div className='flex md:justify-between'>
             <div>
-                <input className='text-[25px] m-[10px] p-[5px] pl-[20px] w-[480px] border-[2px] border-gray-300 rounded-md font-serif text-black tracking-lighter'
-                type='text' placeholder='Title' onChange={(e) => {
+                <input className='text-[25px] m-[10px] p-[5px] pl-[20px] w-[465px] border-[2px] border-gray-300 rounded-md font-serif text-black tracking-lighter'
+                type='text' placeholder='Title' value={title} onChange={(e) => {
                     setTitle(e.target.value);
                 }} />
             </div>
@@ -79,7 +138,7 @@ export default function QuillEditor(){
             </div>
         </div>
         <div className='m-[10px]'>
-            <ReactQuill theme='snow' value={content} onChange={setContent} />
+            <ReactQuill theme='snow' value={content} onChange={setContent} modules={modules} />
         </div>
         <div>
 
