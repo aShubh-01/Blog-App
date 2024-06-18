@@ -1,4 +1,4 @@
-import { Header, InputField, Button, Quote, LogIssues } from '../SubComponents'; 
+import { Header, InputField, Button, LogIssues } from '../SubComponents'; 
 import { errorAtom } from '../../states/errorHandling';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
