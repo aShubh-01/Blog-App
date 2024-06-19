@@ -1,11 +1,12 @@
 import { AppBar } from '../AppBar';
 import { SideBar } from '../SideBar';
 import { sidebarAtom } from '../../states/sidebar';
-import { useRecoilState} from 'recoil';
+import { useRecoilState, useSetRecoilState} from 'recoil';
 import { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetDraftBlogs } from '../../states/getBlogs';
 import { htmlToString } from '../../methods/htmlToString';
+import { draftBlogDataAtom } from '../../states/draftBlogData';
 
 export default function DraftBlogs(){
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
@@ -40,6 +41,7 @@ function AllDraftBlogs(){
     let key = 1;
     const navigate = useNavigate();
     const data = useGetDraftBlogs();
+    const setDraftBlogData = useSetRecoilState(draftBlogDataAtom);
 
     if(data.loading == true) return <div>Loading...</div>
     if(data.drafts == (null || undefined)) return <div>Unable to get drafts</div>
@@ -50,9 +52,11 @@ function AllDraftBlogs(){
         {
             data.drafts.map((draft) => {
                 return <div key={key++} className='m-[5px]' onClick={() => {
-                    localStorage.setItem('title', draft.title);
-                    localStorage.setItem('content', draft.content);
-                    localStorage.setItem('id', draft.id);
+                    setDraftBlogData({
+                        id: draft.id,
+                        title: draft.title,
+                        content: draft.content
+                    });
                     navigate('/write');
                 }}>
                     <DraftBlogCard createdAt={draft.createdAt} updatedAt={draft.updatedAt} title={draft.title} content={htmlToString(draft.content)} />
@@ -69,7 +73,7 @@ function DraftBlogCard({createdAt, updatedAt, title, content}: DraftBlogCardInte
         return Math.floor((words > 100 ? words / 100 : 1));
     }, []);
 
-    return <div className='border-[1px] p-[10px] border-gray-400 break-words rounded-[15px] w-[460px]'>
+    return <div className='border-[1px] p-[10px] border-gray-400 break-words rounded-[15px] w-[480px]'>
         <div>
             <div className='text-[25px] font-serif font-bold'>{title.length > 50 ? title.slice(0, 350) + '...' : title}</div>
         </div>
@@ -80,7 +84,7 @@ function DraftBlogCard({createdAt, updatedAt, title, content}: DraftBlogCardInte
             </div>
             <div className='flex justify-between gap-[10px]'>
                 <div className='py-[6px] text-[15px] text-slate-700 font-medium text-center'>Created • {createdAt}</div>
-                {!(createdAt != updatedAt) &&
+                {(createdAt != updatedAt) &&
                     <div className='py-[6px] text-[15px] text-slate-700 font-medium text-center'>| Updated • {updatedAt}</div>
                 }
             </div>
