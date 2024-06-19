@@ -19,14 +19,27 @@ model User {
   name String
   password String
   posts Post[]
+  savedPosts SavedPost[]
 }
 
 model Post {
   id Int @id @default(autoincrement())
+  
+  isDeleted Boolean @default(false)
+  published Boolean @default(false)
   title String
   content String
   createdAt String
-  published Boolean @default(false)
+  updatedAt String
   authorId String
   author User @relation(fields: [authorId], references: [id])
+  savedPosts SavedPost[]
+}
+
+model SavedPost{
+  authorId String
+  postId Int
+  user User @relation(fields: [authorId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+  @@id([authorId, postId])
 }
