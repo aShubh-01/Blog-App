@@ -2,6 +2,35 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../components/config';
 
+export function useGetSavedBlogs(){
+    const [savedBlogs, setSavedBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        try {
+            axios({
+                url: `${BACKEND_URL}/api/v1/blog`,
+                method: 'GET',
+                headers: {
+                    'Content-Type': "application/json",
+                    'Authorization': localStorage.getItem('token')
+                }
+            }).then((res) => {
+                setLoading(false);
+                setSavedBlogs(res.data.savedPosts.savedPosts);
+            });
+
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
+
+    return {
+        savedBlogs,
+        loading
+    }
+}
+
 export function useGetBlog(postId: any){
     const [blog, setBlog] = useState();
 

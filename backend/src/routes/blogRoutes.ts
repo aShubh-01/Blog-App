@@ -41,12 +41,13 @@ blogRouter.post('/publish', async (c) => {
         day: 'numeric', month: 'short', year: 'numeric'
     });
 
-    await prisma.post.create({
+    const post = await prisma.post.create({
         data: {
+            authorId: userId,
             title: blogDataBody.title,
             content: blogDataBody.content,
-            authorId: userId,
             createdAt: formattedDate,
+            updatedAt: formattedDate,
             published: blogDataBody.isPublished
         }
     });
@@ -76,6 +77,11 @@ blogRouter.put('/', async (c) => {
         }, 411);
     }
 
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('en-US', {
+        day: 'numeric', month: 'short', year: 'numeric'
+    });
+
     await prisma.post.update({
         where: {
             id: updatedBlogDataBody.id,
@@ -83,11 +89,14 @@ blogRouter.put('/', async (c) => {
         },
         data: {
             title: updatedBlogDataBody.title,
-            content: updatedBlogDataBody.content
+            content: updatedBlogDataBody.content,
+            createdAt: formattedDate,
+            updatedAt: formattedDate,
+            published: updatedBlogDataBody.isPublished
         }
     });
 
-    return c.text('Updated post');
+    return c.text('Updated post', 200);
 });
 
 blogRouter.get('/drafts', async(c) => {
@@ -98,17 +107,17 @@ blogRouter.get('/drafts', async(c) => {
         const posts = await prisma.post.findMany({
             where: {
                 authorId: userId,
-                published: false
+                published: false,
+                isDeleted: false
             },
             select: {
                 id: true,
                 title: true,
                 content: true,
                 createdAt: true,
+                updatedAt: true,
             }
         });
-
-        console.log('Posts ', posts);
 
         return c.json({
             drafts: posts
@@ -117,16 +126,18 @@ blogRouter.get('/drafts', async(c) => {
     } catch (err) {
         return c.json({
             msg: 'Unable to get drafts'
-        }, 200)
+        }, 411)
     }
 });
 
 blogRouter.get('/bulk', async (c) => {
     const prisma = c.get('prisma');
+    const userId = c.get('userId');
 
     const posts = await prisma.post.findMany({
         where: {
-            published: true
+            published: true,
+            isDeleted: false
         },
         select: {
             author: {
@@ -135,15 +146,146 @@ blogRouter.get('/bulk', async (c) => {
                 }
             },
             id: true,
+            savedPosts: {
+                where: {
+                    authorId: userId
+                },
+                select: {
+                    postId: true
+                }
+            },
             title: true,
             content: true,
-            createdAt: true
+            createdAt: true,
         }
     });
+
+    console.log(posts);
 
     return c.json({
         allBlogs: posts.reverse()
     }, 200);
+});
+
+blogRouter.post('/save/:id', async (c) => {
+    const userId = c.get('userId');
+    const prisma = c.get('prisma');
+
+    const id = parseInt(c.req.param('id'));
+
+    try {
+        await prisma.savedPost.create({
+            data: {
+                authorId: userId,
+                postId: id
+            }
+        });
+    
+        return c.json({
+            savedPost: "Saved Post"
+        }, 200);
+
+    } catch (err) {
+        console.error(err);
+        return c.text('Unable to save post', 411);
+    }
+
+});
+
+blogRouter.delete('/unsave/:id', async(c) => {
+    const prisma = c.get('prisma');
+    const userId = c.get('userId');
+    const id = parseInt(c.req.param('id'));
+
+    try {
+        await prisma.savedPost.delete({
+            where: {
+               authorId_postId: {
+                authorId: userId,
+                postId: id
+               }
+            }
+        });
+    
+        return c.json({
+            msg: "Removed post from save"
+        }, 200);
+
+    } catch (err) {
+        console.error(err);
+        return c.text('Unable to delete post from save', 411);
+    }
+});
+
+blogRouter.get('/', async(c) => {
+    const prisma = c.get('prisma');
+    const userId = c.get('userId');
+
+    try {
+        const savedPosts = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                savedPosts: {
+                    select: {
+                        post: {
+                            select: {
+                                author: {
+                                    select: {
+                                        name: true
+                                    }
+                                },
+                                id: true,
+                                published: true,
+                                isDeleted: true,
+                                title: true,
+                                content: true,
+                                createdAt: true,
+                                updatedAt: true
+                            }
+                        }
+                    }
+                }
+            }
+            
+        });
+    
+        return c.json({
+            savedPosts: savedPosts
+        }, 200)
+    } catch (err) {
+        console.error(err);
+        return c.text('Unable to delete post from save', 411);
+    }
+
+})
+
+blogRouter.delete('/:id', async (c) => {
+    const userId = c.get('userId');
+    const prisma = c.get('prisma');
+    const id = parseInt(c.req.param('id'));
+
+    try {
+        await prisma.post.update({
+            where: {
+                authorId: userId,
+                id: id
+            },
+            data: {
+                published: false,
+                isDeleted: true
+            }
+        });
+    
+        return c.json({
+            msg: "Deleted Blog"
+        }, 200);
+
+    } catch (err) {
+        console.error(err);
+        return c.text("Unable to delete blog", 411);
+    }
 });
 
 blogRouter.get('/:id', async (c) => {
@@ -154,27 +296,34 @@ blogRouter.get('/:id', async (c) => {
         return c.text('Unable to find id query parameter');
     }
 
-    const post = await prisma.post.findFirst({
-        where: {
-            id: parseInt(postId)
-        },
-        select: {
-            author: {
-                select: {
-                    name: true
-                }
+    try {
+        const post = await prisma.post.findFirst({
+            where: {
+                id: parseInt(postId),
+                isDeleted: false
             },
-            id: true,
-            title: true,
-            content: true,
-            published: true,
-            createdAt: true
-        }
-    });
-
-    return c.json({
-        blog: post
-    }, 200);
+            select: {
+                author: {
+                    select: {
+                        name: true
+                    }
+                },
+                id: true,
+                title: true,
+                content: true,
+                published: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+    
+        return c.json({
+            blog: post
+        }, 200);
+    } catch (err) {
+        console.error(err);
+        return c.text('Unable to delete post from save', 411);
+    }
 });
 
 export default blogRouter;

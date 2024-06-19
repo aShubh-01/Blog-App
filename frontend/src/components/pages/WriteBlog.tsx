@@ -6,7 +6,7 @@ import { useRecoilState } from 'recoil';
 import QuillEditor from '../QuillEditor';
 
 export default function(){
-    const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
+    const [sideBar, setSideBar] = useRecoilState(sidebarAtom)
 
     function toggleSideBar(){
         setSideBar((prev) => !prev);

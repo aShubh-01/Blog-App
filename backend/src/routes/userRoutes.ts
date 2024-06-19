@@ -102,9 +102,7 @@ userRouter.post('/signin', async (c) => {
         }, 411)
       }
 
-      console.log(user);
       const token = await sign({ id: user.id }, c.env.JWT_KEY);
-      console.log(token);
   
       return c.json({
         msg: "Signed In Successfully!",

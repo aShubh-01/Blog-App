@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import ReactQuill from 'react-quill';
+import { draftBlogDataAtom } from '../states/draftBlogData';
+import { useRecoilState } from 'recoil';
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +9,11 @@ import { useMediaQuery } from '@mui/material';
 import { BACKEND_URL } from './config';
 
 export default function QuillEditor(){
+    const [draftBlogData, setDraftBlogData] = useRecoilState(draftBlogDataAtom);
     const isSmallScreen = useMediaQuery('(max-width:640px)')
-    const [content, setContent] = useState(localStorage.getItem('content') || '');
-    const [title, setTitle] = useState(localStorage.getItem('title') || '');
+    const [id, setId] = useState(draftBlogData.id);
+    const [content, setContent] = useState(draftBlogData.content);
+    const [title, setTitle] = useState(draftBlogData.title);
     const navigate = useNavigate();
 
     const modules = {
@@ -24,7 +28,7 @@ export default function QuillEditor(){
 
     const publishPost = async() => {
         try {
-            if(localStorage.getItem('id')) {
+            if(id) {
 
                 const response = await axios({
                     url: `${BACKEND_URL}/api/v1/blog`,
@@ -34,7 +38,7 @@ export default function QuillEditor(){
                         'Authorization': localStorage.getItem('token')
                     },
                     data: {
-                        id: parseInt(localStorage.getItem('id')),
+                        id: id,
                         title: title,
                         content: content,
                         isPublished: true
@@ -42,9 +46,7 @@ export default function QuillEditor(){
                 });
 
                 if(response.status == 200){
-                    localStorage.removeItem('title');
-                    localStorage.removeItem('content');
-                    localStorage.removeItem('id');
+                    setDraftBlogData({id: '', title: '', content: ''});
                     navigate('/blogs');
                 }
 
@@ -75,7 +77,7 @@ export default function QuillEditor(){
 
     const saveDraft = async() => {
         try {
-            if(localStorage.getItem('id')) {
+            if(id) {
                 const response = await axios({
                     url: `${BACKEND_URL}/api/v1/blog`,
                     method: 'PUT',
@@ -84,17 +86,15 @@ export default function QuillEditor(){
                         'Authorization': localStorage.getItem('token')
                     },
                     data: {
-                        id: parseInt(localStorage.getItem('id')),
+                        id: id,
                         title: title,
                         content: content,
                         isPublished: false
                     }
                 });
-    
+
                 if(response.status == 200){
-                    localStorage.removeItem('title');
-                    localStorage.removeItem('content');
-                    localStorage.removeItem('id');
+                    setDraftBlogData({id: '', title: '', content: ''});
                     navigate('/drafts');
                 }
 
@@ -126,7 +126,7 @@ export default function QuillEditor(){
     return <div className='mt-[60px] md:mx-[230px]'>
         <div className='flex md:justify-between'>
             <div>
-                <input className='text-[25px] m-[10px] p-[5px] pl-[20px] w-[465px] border-[2px] border-gray-300 rounded-md font-serif text-black tracking-lighter'
+                <input className='text-[25px] m-[10px] p-[5px] pl-[20px] w-[480px] md:w-[800px] border-[2px] border-gray-300 rounded-md font-serif text-black tracking-lighter'
                 type='text' placeholder='Title' value={title} onChange={(e) => {
                     setTitle(e.target.value);
                 }} />
