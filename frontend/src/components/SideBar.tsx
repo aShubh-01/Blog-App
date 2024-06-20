@@ -63,7 +63,7 @@ export function SideBar({toggleSideBar}: ToggleSideBarType){
                 title="Log Out" onClickEvent={() => {
                     cleanUp();
                     localStorage.clear();
-                    navigate('/signin');
+                    navigate('/');
                 }} />
             </div>
         </div>

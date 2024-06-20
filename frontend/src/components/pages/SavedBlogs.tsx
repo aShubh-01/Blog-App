@@ -2,6 +2,7 @@ import { AppBar } from '../AppBar';
 import { SideBar } from '../SideBar';
 import { sidebarAtom } from '../../states/sidebar';
 import { useRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { AvatarIcon } from '../SubComponents';
 import { useGetSavedBlogs } from '../../states/getBlogs';
@@ -78,11 +79,17 @@ function AllSavedBlogs(){
 
 function SavedBlogCard({id, title, content, avatar, author, date, isDeleted, published}: DraftBlogCardInterface){
     const [isSaved, setIsSaved] = useState(true);
+    const navigate = useNavigate();
 
     const readTime = useMemo(() => {
         const words = content.split(' ').length;
         return Math.floor((words > 100 ? words / 100 : 1));
     }, []);
+
+    function readPost(){
+        localStorage.setItem('postId', id.toString());
+        navigate('/read');
+    }
 
     function unsavePost(id: number){
         axios({
@@ -111,26 +118,26 @@ function SavedBlogCard({id, title, content, avatar, author, date, isDeleted, pub
     }
 
     return <div className='grid-cols-3 w-[480px] max-h-[300px] p-[10px] rounded-[10px] border-[1px] border-gray-400 text-start break-words'>
-        <div className='col-span-1 flex justify-between'>
+        <div className='col-span-1 flex justify-between hover:cursor-pointer' onClick={readPost}>
             <div className='flex justify-start gap-[10px]'>
                 <AvatarIcon avatar={avatar} />
-            <div className='pt-[7px] text-[18px] font-medium text-center'>
-                {author}
+                <div className='pt-[7px] text-[18px] font-medium text-center'>
+                    {author}
+                </div>
             </div>
-            </div>
-            <div className='pt-[10px] text-[15px] text-slate-700 font-medium text-center flex justify-between gap-[2px]'>
+            <div className='pt-[10px] text-[15px] text-slate-700 font-medium text-center flex justify-between gap-[2px] hover:cursor-pointer' onClick={readPost}>
                 <div>•</div>
                 <div className='pr-[5px]'>{date}</div>
             </div>
         </div>
-            <div className='col-span-1 ml-[5px] mt-[15px] text-[25px] font-serif font-bold'>
-                {(title.length > 100 ? title.slice(0, 100) + "..." : title)}
+            <div className='col-span-1 ml-[5px] mt-[15px] text-[25px] font-serif font-bold hover:cursor-pointer' onClick={readPost}>
+                {(title.length > 35 ? title.slice(0, 35) + "..." : title)}
             </div>
             <div className='ml-[5px] my-[5px] text-[20px]'>
                 {(content.length > 90 ? content.slice(0, 90) + "..." : content)}
             </div>
         <div className='col-span-1 flex justify-between'>
-            <div className='mt-[20px] ml-[5px] bg-gray-200 p-[3px] px-[8px] rounded-xl font-medium'>
+            <div className='mt-[20px] ml-[5px] bg-gray-200 p-[3px] px-[8px] rounded-xl font-medium hover:cursor-pointer' onClick={readPost}>
                 {readTime} min read
             </div>
             <div className='mt-[20px]'>
