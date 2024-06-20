@@ -90,7 +90,6 @@ blogRouter.put('/', async (c) => {
         data: {
             title: updatedBlogDataBody.title,
             content: updatedBlogDataBody.content,
-            createdAt: formattedDate,
             updatedAt: formattedDate,
             published: updatedBlogDataBody.isPublished
         }
