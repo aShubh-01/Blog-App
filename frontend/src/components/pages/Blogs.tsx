@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { useGetAllBlogs }  from '../../states/getBlogs';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { postIdAtom, useGetAllBlogs }  from '../../states/getBlogs';
 import { sidebarAtom } from '../../states/sidebar';
 import { AvatarIcon } from '../SubComponents';
 import { AppBar } from '../AppBar';
@@ -71,6 +71,7 @@ function AllBlogs(){
 
 function BlogCard({id, is_Saved, avatar, author, date, title, content}: BlogCardType){
     const [isSaved, setIsSaved] = useState(is_Saved);
+    const setPostId = useSetRecoilState(postIdAtom);
     const navigate = useNavigate();
 
     const readTime = useMemo(() => {
@@ -103,11 +104,10 @@ function BlogCard({id, is_Saved, avatar, author, date, title, content}: BlogCard
         });
         
         setIsSaved(true)
-    
     }
 
     function readPost(){
-        localStorage.setItem('postId', id.toString());
+        setPostId(id)
         navigate('/read');
     }
 

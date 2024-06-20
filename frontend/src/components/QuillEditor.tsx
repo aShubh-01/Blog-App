@@ -137,7 +137,7 @@ export default function QuillEditor(){
             }
             </div>
         </div>
-        <div className='m-[10px]'>
+        <div className='m-[10px] min-w-[1000px]'>
             <ReactQuill theme='snow' value={content} onChange={setContent} modules={modules} />
         </div>
         <div>

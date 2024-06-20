@@ -26,7 +26,7 @@ export default function Signin(){
                         <LogIssues issues={log.issues}/>
                     </div>
                 }
-                <div className='mt-[10px] mb-[10px] flex justify-center'><Button title="Sign Up" onClickEvent={() => {
+                <div className='mt-[10px] mb-[10px] flex justify-center'><Button title="Sign In" onClickEvent={() => {
                         setLog
                         axios({
                             url: `${BACKEND_URL}/api/v1/user/signin`,
