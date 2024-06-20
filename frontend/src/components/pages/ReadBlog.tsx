@@ -2,7 +2,7 @@ import { useGetBlog } from '../../states/getBlogs';
 import { AvatarIcon } from '../SubComponents';
 import parse from 'html-react-parser';
 import { useRecoilState } from 'recoil';
-import React, { createElement, useEffect } from 'react';
+import { useEffect } from 'react';
 import { AppBar } from '../AppBar';
 import { SideBar } from '../SideBar';
 import { sidebarAtom } from '../../states/sidebar';
@@ -22,6 +22,15 @@ export default function ReadBlog(){
     if(data.loading == true) return <div> Loading Post... </div>
     if(data.blog == (undefined || null)) return <div> Unable to get blog </div>
 
+    const blogData : {
+        title: string,
+        content: string,
+        updatedAt: string,
+        createdAt: string,
+        author: {
+            name: string
+        }
+    } = data.blog
     return <div>
          <section className={`fixed top-0`}>
             <AppBar toggleSideBar={toggleSideBar}/>
@@ -30,7 +39,7 @@ export default function ReadBlog(){
             <SideBar toggleSideBar={toggleSideBar} />
         </section>
         <div className='mt-[50px]'>
-        <BlogData title={data.blog.title} content={data.blog.content} updatedAt = {data.blog.updatedAt} createdAt={data.blog.createdAt} authorName={data.blog.author.name}/>
+        <BlogData title={blogData.title} content={blogData.content} updatedAt = {blogData.updatedAt} createdAt={blogData.createdAt} authorName={blogData.author.name}/>
         </div>
     </div>
 }

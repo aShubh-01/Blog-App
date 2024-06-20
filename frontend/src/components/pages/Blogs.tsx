@@ -46,7 +46,8 @@ interface BlogType {
     author: {name: string},
     content: string,
     createdAt: string,
-    is_Saved: boolean
+    savedPosts: [],
+    is_Saved: boolean,
     id: number,
     title: string
 }   
