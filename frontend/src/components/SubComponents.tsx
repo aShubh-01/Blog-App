@@ -71,7 +71,7 @@ export function LogIssues({issues}: {issues: string[]}) {
 }
 
 export function AvatarIcon({avatar}: {avatar: string}){
-    return <div className='h-[40px] w-[40px] text-[25px] rounded-2xl bg-gray-300 text-center'>
+    return <div className='h-[40px] w-[40px] text-[25px] rounded-2xl bg-black text-white text-center'>
         {avatar.toUpperCase()}
     </div>
 }

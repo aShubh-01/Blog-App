@@ -39,7 +39,7 @@ export function useGetBlog(postId: any){
     useEffect(() => {
         try {
             axios({
-                url: 'http://localhost:8787/api/v1/blog/' +postId,
+                url: 'http://localhost:8787/api/v1/blog/' +parseInt(postId),
                 method: 'GET',
                 headers: {
                     'Content-Type' : 'application/json',

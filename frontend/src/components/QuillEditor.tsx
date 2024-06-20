@@ -9,9 +9,10 @@ import { useMediaQuery } from '@mui/material';
 import { BACKEND_URL } from './config';
 
 export default function QuillEditor(){
+
     const [draftBlogData, setDraftBlogData] = useRecoilState(draftBlogDataAtom);
     const isSmallScreen = useMediaQuery('(max-width:640px)')
-    const id = useState(draftBlogData.id);
+    const id  = draftBlogData.id;
     const [content, setContent] = useState(draftBlogData.content);
     const [title, setTitle] = useState(draftBlogData.title);
     const navigate = useNavigate();
@@ -29,7 +30,6 @@ export default function QuillEditor(){
     const publishPost = async() => {
         try {
             if(id) {
-
                 const response = await axios({
                     url: `${BACKEND_URL}/api/v1/blog`,
                     method: 'PUT',
@@ -94,8 +94,8 @@ export default function QuillEditor(){
                 });
 
                 if(response.status == 200){
-                    setDraftBlogData({id: '', title: '', content: ''});
                     navigate('/drafts');
+                    setDraftBlogData({id: '', title: '', content: ''});
                 }
 
             } else {
