@@ -19,7 +19,7 @@ export default function Signup(){
 
     return <div className='flex justify-center'>
             <div className='w-[400px] mt-[150px] border-2 border-black rounded-xl'>
-                <div className='my-[20px] flex justify-center'><Header  title="Create an account" description="Already have an account?" link="Login" hLink="/signin" /></div>
+                <div className='my-[20px] flex justify-center'><Header  title="Create an account" description="Already have an account?" link="Login" hLink="/" /></div>
                 <div className='my-[5px] flex justify-center'><InputField title="Username" type='text' placeholder="Eg. Johnny" setProperty={setUsername} /></div>
                 <div className='my-[5px] flex justify-center'><InputField title="Email" type='text' placeholder="Eg. John@gmail.com" setProperty={setEmail} /></div>
                 <div className='my-[5px] flex justify-center'><InputField title="Password" type='text' placeholder="Minimum 6 characters" setProperty={setPassword} /></div>

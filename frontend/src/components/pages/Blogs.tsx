@@ -57,8 +57,6 @@ function AllBlogs(){
 
     if(blogs.loading == true) return <div>Loading...</div>
 
-    console.log(blogs.blogs);
-
     return <div>
         {
             blogs.blogs.map((blog : BlogType) => {

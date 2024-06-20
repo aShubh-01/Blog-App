@@ -2,7 +2,7 @@ import { useGetBlog } from '../../states/getBlogs';
 import { AvatarIcon } from '../SubComponents';
 import parse from 'html-react-parser';
 import { useRecoilState } from 'recoil';
-import { useEffect } from 'react';
+import React, { createElement, useEffect } from 'react';
 import { AppBar } from '../AppBar';
 import { SideBar } from '../SideBar';
 import { sidebarAtom } from '../../states/sidebar';
@@ -44,14 +44,15 @@ interface BlogInfoInterface {
 }
 
 function BlogData({title, content, createdAt, updatedAt, authorName}: BlogInfoInterface){
-    return <div className='md:flex justify-between'>
+
+    return <div className='md:flex px-[5px] break-words justify-between'>
         <div className='mt-[10px] w-[480px] grid-cols-3 p-[5px] md:w-[1200px] md:m-[50px]'>
-            <div className='my-[10px] w-[500px] md:w-[1000px] col-span-1 text-[40px] tracking-tight font-bold'>{title}</div>
-            <div className='my-[10px] col-span-1 px-[10px] text-[18px] font-medium gap-[4px]'>
+            <div className='my-[10px] w-[500px] md:w-[1000px] col-span-1 text-[25px] md:text-[40px] tracking-tight font-bold'>{title}</div>
+            <div className='my-[10px] col-span-1 px-[10px] text-[15px] md:text-[18px] font-medium gap-[4px]'>
                 <div>Posted on : {createdAt}</div>
                 <div>Last Updated : {updatedAt}</div>
             </div>
-            <div className='my-[10px] col-span-1 px-[10px] text-[23px]'>
+            <div className='my-[10px] col-span-1 px-[10px] text-[20px] md:text-[23px]'>
                 {parse(content)}
             </div>
         </div>
@@ -60,7 +61,7 @@ function BlogData({title, content, createdAt, updatedAt, authorName}: BlogInfoIn
                 <div className='font-medium'>Author</div>
                     <div className='flex justify-start gap-[10px] mt-[20px]'>
                     <div><AvatarIcon avatar={authorName[0]}/></div>
-                    <div className='pt-[2px] text-[25px] font-medium'>{authorName}</div>
+                    <div className='pt-[5px] md:pt-[2px] text-[20px] md:text-[25px] font-medium'>{authorName}</div>
                 </div>
             </div>
         </div>

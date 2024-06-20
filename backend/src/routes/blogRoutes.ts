@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { PrismaClient } from '@prisma/client/edge';
 import { authMiddleware, initPrismaClient } from '../middlewares/userMiddleware';
-import { blogPostSchema, blogPostType, updateBlogPostSchema, updateBlogType } from '../../../cmn/dist/index';
+import { blogPostSchema, blogPostType, updateBlogPostSchema, updateBlogType } from '../../../cmn/src/index';
 
 const blogRouter = new Hono<{
     Bindings: {
@@ -159,8 +159,6 @@ blogRouter.get('/bulk', async (c) => {
             createdAt: true,
         }
     });
-
-    console.log(posts);
 
     return c.json({
         allBlogs: posts.reverse()
