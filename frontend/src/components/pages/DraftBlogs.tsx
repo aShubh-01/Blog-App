@@ -47,10 +47,17 @@ function AllDraftBlogs(){
     if(data.drafts == (null || undefined)) return <div>Unable to get drafts</div>
     if(data.drafts.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Drafts Saved, Get <a className='text-slate-600' href='/write'>Writing!</a></div>
 
+    interface DraftData {
+        id: string,
+        title: string,
+        content: string
+        createdAt: string,
+        updatedAt: string
+    }
 
     return <div className={`grid flex justify-center grid-cols-1 md:grid-cols-3 gap-[5px]`}>
         {
-            data.drafts.map((draft) => {
+            data.drafts.map((draft: DraftData) => {
                 return <div key={key++} className='m-[5px]' onClick={() => {
                     setDraftBlogData({
                         id: draft.id,

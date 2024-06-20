@@ -35,15 +35,29 @@ export default function SavedBlogs(){
 }
 
 interface DraftBlogCardInterface {
-    id: number;
-    title: string;
-    content: string;
-    avatar: string;
-    author: string;
-    date: string;
-    isDeleted: string;
-    published: string;
+    post: {
+        id: number;
+        title: string;
+        content: string;
+        avatar: string;
+        author: {
+            name: string
+        };
+        createdAt: string;
+        isDeleted: string;
+        published: string;
+    }
 }
+
+interface DraftBlogCardInterface2 {
+        id: number;
+        title: string;
+        content: string;
+        avatar: string;
+        author: string
+        createdAt: string;
+}
+
 
 function AllSavedBlogs(){
     let key = 1;
@@ -65,9 +79,7 @@ function AllSavedBlogs(){
                             content={htmlToString(blog.post.content)}
                             avatar={blog.post.author.name[0]}
                             author={blog.post.author.name}
-                            date={blog.post.createdAt}
-                            isDeleted={blog.post.isDeleted}
-                            published={blog.post.published}
+                            createdAt={blog.post.createdAt}
                         />
                     </div>
                 } else return
@@ -77,7 +89,7 @@ function AllSavedBlogs(){
     </div>
 }
 
-function SavedBlogCard({id, title, content, avatar, author, date, isDeleted, published}: DraftBlogCardInterface){
+function SavedBlogCard({id, title, content, avatar, author, createdAt}: DraftBlogCardInterface2){
     const [isSaved, setIsSaved] = useState(true);
     const navigate = useNavigate();
 
@@ -127,7 +139,7 @@ function SavedBlogCard({id, title, content, avatar, author, date, isDeleted, pub
             </div>
             <div className='pt-[10px] text-[15px] text-slate-700 font-medium text-center flex justify-between gap-[2px] hover:cursor-pointer' onClick={readPost}>
                 <div>•</div>
-                <div className='pr-[5px]'>{date}</div>
+                <div className='pr-[5px]'>{createdAt}</div>
             </div>
         </div>
             <div className='col-span-1 ml-[5px] mt-[15px] text-[25px] font-serif font-bold hover:cursor-pointer' onClick={readPost}>
