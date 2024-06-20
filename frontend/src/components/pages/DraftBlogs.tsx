@@ -45,7 +45,7 @@ function AllDraftBlogs(){
 
     if(data.loading == true) return <div>Loading...</div>
     if(data.drafts == (null || undefined)) return <div>Unable to get drafts</div>
-    if(data.drafts.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Drafts Saved, Get <a className='text-slate-600' href='/write'>Writing!</a></div>
+    if(data.drafts.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Drafts Saved, Get <div className='text-slate-600 hover:cursor-pointer' onClick={() => {navigate('/write')}}>Writing!</div></div>
 
     interface DraftData {
         id: string,

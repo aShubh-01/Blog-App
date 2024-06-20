@@ -62,10 +62,11 @@ interface DraftBlogCardInterface2 {
 function AllSavedBlogs(){
     let key = 1;
     const data = useGetSavedBlogs();
+    const navigate = useNavigate();
 
     if(data.loading == true) return <div>Loading...</div>
     if(data.savedBlogs == (null || undefined)) return <div>Unable to get saved blogs</div>
-    if(data.savedBlogs.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Posts Saved, <a className='text-slate-600' href='/blogs'>Read & Explore!</a></div>
+    if(data.savedBlogs.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Posts Saved, <div className='text-slate-600 hover:cursor-pointer' onClick={() => {navigate('/blogs')}}>Read & Explore!</div></div>
 
 
     return <div className='grid grid-cols-1 md:grid-cols-3'>
