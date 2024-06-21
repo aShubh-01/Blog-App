@@ -7,8 +7,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { AvatarIcon } from '../SubComponents';
 import { useGetSavedBlogs } from '../../states/getBlogs';
 import { htmlToString } from '../../methods/htmlToString';
-import { BACKEND_URL } from '../config';
 import axios from 'axios';
+import { BACKEND_URL } from '../config';
 
 export default function SavedBlogs(){
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
@@ -100,7 +100,7 @@ function SavedBlogCard({id, title, content, avatar, author, createdAt}: DraftBlo
     }, []);
 
     function readPost(){
-        localStorage.setItem('postId', id.toString());
+        localStorage.setItem('postId', id.toString())
         navigate('/read');
     }
 

@@ -1,14 +1,14 @@
 import { useMemo, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { postIdAtom, useGetAllBlogs }  from '../../states/getBlogs';
+import { useRecoilState } from 'recoil';
+import { useGetAllBlogs }  from '../../states/getBlogs';
 import { sidebarAtom } from '../../states/sidebar';
 import { AvatarIcon } from '../SubComponents';
 import { AppBar } from '../AppBar';
 import { SideBar } from '../SideBar';
 import { htmlToString } from '../../methods/htmlToString';
-import { BACKEND_URL } from '../config';
 import axios from 'axios';
+import { BACKEND_URL } from '../config';
 
 export default function Blogs(){
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
@@ -71,7 +71,6 @@ function AllBlogs(){
 
 function BlogCard({id, is_Saved, avatar, author, date, title, content}: BlogCardType){
     const [isSaved, setIsSaved] = useState(is_Saved);
-    const setPostId = useSetRecoilState(postIdAtom);
     const navigate = useNavigate();
 
     const readTime = useMemo(() => {
@@ -107,7 +106,7 @@ function BlogCard({id, is_Saved, avatar, author, date, title, content}: BlogCard
     }
 
     function readPost(){
-        setPostId(id)
+        localStorage.setItem('postId', id.toString())
         navigate('/read');
     }
 

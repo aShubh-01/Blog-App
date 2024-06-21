@@ -1,15 +1,20 @@
 import { useGetBlog } from '../../states/getBlogs';
 import { AvatarIcon } from '../SubComponents';
 import parse from 'html-react-parser';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import { useEffect, useMemo } from 'react';
 import { AppBar } from '../AppBar';
 import { SideBar } from '../SideBar';
 import { sidebarAtom } from '../../states/sidebar';
-import { postIdAtom } from '../../states/getBlogs';
 
 export default function ReadBlog(){
-    const postId : number = useRecoilValue(postIdAtom);
+
+    const postId : number = useMemo(() => {
+        const post_id = localStorage.getItem('postId');
+        if(post_id != (null || undefined)) return parseInt(post_id);
+        else return 0;
+    }, []);
+
     const data = useGetBlog(postId);
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
 
