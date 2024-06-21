@@ -20,7 +20,7 @@ export function AppBar({toggleSideBar}: ToggleSideBarType){
                 <div><SideBarLogo toggleSideBar={toggleSideBar}/></div>
                 <div className='p-[2px]'><AppLogo /></div>
             </div>
-            <div className='flex justify-between gap-[10px] p-[9px]'>
+            <div className='flex justify-between gap-[10px] p-[9px] mr-[10px]'>
                 <div className='pt-[1px] text-[25px] font-semibold flex justify-between gap-[5px]'>
                     <div>Welcome!</div>
                     {!isSmallScreen &&

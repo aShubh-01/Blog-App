@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AvatarIcon } from '../SubComponents';
 import { useGetSavedBlogs } from '../../states/getBlogs';
 import { htmlToString } from '../../methods/htmlToString';
+import { SearchBlogs } from '../AnimatedComponents';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
 
@@ -28,7 +29,7 @@ export default function SavedBlogs(){
         <section  className={`fixed top-0 left-0 rounded-md transform transition-transform duration-500 ${sideBar ? 'translate-x-0' : '-translate-x-full'}`}>
             <SideBar toggleSideBar={toggleSideBar} />
         </section>
-        <div className='mt-[100px] flex justify-center'>
+        <div className='flex justify-center'>
             <AllSavedBlogs />
         </div>
     </div>
@@ -58,18 +59,17 @@ interface DraftBlogCardInterface2 {
         createdAt: string;
 }
 
-
 function AllSavedBlogs(){
     let key = 1;
     const data = useGetSavedBlogs();
     const navigate = useNavigate();
 
-    if(data.loading == true) return <div>Loading...</div>
+    if(data.loading == true) return <div className='my-[300px]'><SearchBlogs /></div>
     if(data.savedBlogs == (null || undefined)) return <div>Unable to get saved blogs</div>
-    if(data.savedBlogs.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Posts Saved, <div className='text-slate-600 hover:cursor-pointer' onClick={() => {navigate('/blogs')}}>Read & Explore!</div></div>
+    if(data.savedBlogs.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Bookmarks Saved, <div className='text-slate-600 hover:cursor-pointer' onClick={() => {navigate('/blogs')}}>Read & Explore!</div></div>
 
 
-    return <div className='grid grid-cols-1 md:grid-cols-3'>
+    return <div className='mt-[70px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
         {
             data.savedBlogs.map((blog: DraftBlogCardInterface) => {
                 if(!(blog.post.isDeleted) && (blog.post.published)){
@@ -147,7 +147,7 @@ function SavedBlogCard({id, title, content, avatar, author, createdAt}: DraftBlo
                 {(title.length > 35 ? title.slice(0, 35) + "..." : title)}
             </div>
             <div className='ml-[5px] my-[5px] text-[20px]'>
-                {(content.length > 90 ? content.slice(0, 90) + "..." : content)}
+                {(content.length > 80 ? content.slice(0, 80) + "..." : content)}
             </div>
         <div className='col-span-1 flex justify-between'>
             <div className='mt-[20px] ml-[5px] bg-gray-200 p-[3px] px-[8px] rounded-xl font-medium hover:cursor-pointer' onClick={readPost}>

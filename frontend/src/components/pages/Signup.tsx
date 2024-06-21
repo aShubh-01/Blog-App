@@ -3,8 +3,9 @@ import { errorAtom } from '../../states/errorHandling';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../config';
+import { useNavigate } from 'react-router-dom';
+import { SignLoading } from '../AnimatedComponents';
 
 export default function Signup(){
     const [username, setUsername] = useState('');
@@ -13,9 +14,44 @@ export default function Signup(){
     const navigate = useNavigate();
     const [error, setError] = useRecoilState(errorAtom);
 
+    const ButtonInnerHTMl = <div>Sign Up</div>;
+    const [buttonContent, setButtonContent] = useState(ButtonInnerHTMl);
+
     useEffect(() => {
         setError({isError: false, issues: []});
     }, []);
+
+    const handleSignUp = () => {
+        setButtonContent(<SignLoading/>);
+        axios({
+            url: `${BACKEND_URL}/api/v1/user/signup`,
+            method: 'POST',
+            headers: {
+                'Content-Type': "application/json"
+            },
+            data: {
+                name: username,
+                email: email,
+                password: password
+            }
+        }).then((response) => {
+            if(response.status == 200){
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('username', username);
+                navigate('/blogs');
+            }
+
+        }).catch((err) => {
+            console.log(err);
+            const issues = err.response.data.msg;
+            setError((prevData) => (
+                {...prevData, isError: true, issues: issues}
+            ));
+
+        }).finally(() => {
+            setButtonContent(ButtonInnerHTMl);
+        });
+    }
 
     return <div className='flex justify-center'>
             <div className='w-[400px] mt-[150px] border-2 border-black rounded-xl'>
@@ -28,32 +64,7 @@ export default function Signup(){
                         <LogIssues issues={error.issues}/>
                     </div>
                 }
-                <div className='mt-[10px] mb-[10px] flex justify-center'><Button title="Sign Up" onClickEvent={() => {
-                        axios({
-                            url: `${BACKEND_URL}/api/v1/user/signup`,
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': "application/json"
-                            },
-                            data: {
-                                name: username,
-                                email: email,
-                                password: password
-                            }
-                        }).then((response) => {
-                            if(response.status == 200){
-                                localStorage.setItem('token', response.data.token);
-                                localStorage.setItem('username', username);
-                                navigate('/blogs');
-                            }
-                        }).catch((err) => {
-                            console.log(err);
-                            const issues = err.response.data.msg;
-                            setError((prevData) => (
-                                {...prevData, isError: true, issues: issues}
-                            ));
-                        });
-                }}/></div>
+                <div className='mt-[10px] mb-[10px] flex justify-center'><Button buttonContent={buttonContent} onClickEvent={handleSignUp}/></div>
                 </div>
     </div>
 }

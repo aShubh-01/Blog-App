@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGetDraftBlogs } from '../../states/getBlogs';
 import { htmlToString } from '../../methods/htmlToString';
 import { draftBlogDataAtom } from '../../states/draftBlogData';
+import { SearchBlogs } from '../AnimatedComponents';
 
 export default function DraftBlogs(){
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
@@ -26,7 +27,7 @@ export default function DraftBlogs(){
         <section  className={`fixed top-0 left-0 rounded-md transform transition-transform duration-500 ${sideBar ? 'translate-x-0' : '-translate-x-full'}`}>
             <SideBar toggleSideBar={toggleSideBar} />
         </section>
-        <div className='mt-[60px] flex justify-center'><AllDraftBlogs /></div>
+        <div className='flex justify-center'><AllDraftBlogs /></div>
     </div>
 }
 
@@ -42,7 +43,7 @@ function AllDraftBlogs(){
     const data = useGetDraftBlogs();
     const setDraftBlogData = useSetRecoilState(draftBlogDataAtom);
 
-    if(data.loading == true) return <div>Loading...</div>
+    if(data.loading == true) return <div className='my-[300px]'><SearchBlogs /></div>
     if(data.drafts == (null || undefined)) return <div>Unable to get drafts</div>
     if(data.drafts.length < 1) return <div className='text-[30px] text-center font-mono font-semibold m-[100px]'>No Drafts Saved, Get <div className='text-slate-600 hover:cursor-pointer' onClick={() => {navigate('/write')}}>Writing!</div></div>
 
@@ -53,10 +54,10 @@ function AllDraftBlogs(){
         updatedAt: string
     }
 
-    return <div className={`grid flex justify-center grid-cols-1 md:grid-cols-3 gap-[5px]`}>
+    return <div className={`mt-[70px] grid flex justify-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[5px]`}>
         {
             data.drafts.map((draft: DraftData) => {
-                return <div key={key++} className='m-[5px]' onClick={() => {
+                return <div key={key++} className='m-[5px] hover:cursor-pointer' onClick={() => {
                     setDraftBlogData({
                         id: draft.id,
                         title: draft.title,
@@ -78,11 +79,11 @@ function DraftBlogCard({updatedAt, title, content}: DraftBlogCardInterface){
         return Math.floor((words > 100 ? words / 100 : 1));
     }, []);
 
-    return <div className='border-[1px] p-[10px] border-gray-400 break-words rounded-[15px] w-[480px]'>
+    return <div className='border-[1px] p-[10px] border-gray-400 break-words rounded-[15px] max-h-[235px] w-[480px]'>
         <div>
-            <div className='text-[25px] font-serif font-bold'>{title.length > 50 ? title.slice(0, 350) + '...' : title}</div>
+            <div className='text-[25px] font-serif font-bold'>{title.length > 80 ? title.slice(0, 80) + '...' : title}</div>
         </div>
-        <div className='my-[5px] px-[3px] text-[20px]'>{content.length > 90 ? content.slice(0, 90) + '...' : content}</div>
+        <div className='my-[5px] px-[3px] text-[20px]'>{content.length > 80 ? content.slice(0, 80) + '...' : content}</div>
         <div className='flex justify-between pt-[7px]'>
             <div className='bg-gray-200 h-[35px] text-center p-[5px] px-[7px] font-medium rounded-[15px]'>
                 {readTime} min read
