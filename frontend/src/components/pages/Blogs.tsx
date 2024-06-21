@@ -9,6 +9,7 @@ import { SideBar } from '../SideBar';
 import { htmlToString } from '../../methods/htmlToString';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
+import { LoadBlogs } from '../AnimatedComponents';
 
 export default function Blogs(){
     const [sideBar, setSideBar] = useRecoilState(sidebarAtom);
@@ -56,7 +57,7 @@ function AllBlogs(){
     let key = 1;
     const blogs = useGetAllBlogs();
 
-    if(blogs.loading == true) return <div>Loading...</div>
+    if(blogs.loading == true) return <div className='my-[100px]'><LoadBlogs /></div>
 
     return <div>
         {

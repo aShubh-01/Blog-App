@@ -9,7 +9,7 @@ const Blog = React.lazy(() => import('./components/pages/Blogs'));
 const ReadBlog = React.lazy(() => import('./components/pages/ReadBlog'));
 const WriteBlog = React.lazy(() => import('./components/pages/WriteBlog'));
 const DraftBlogs = React.lazy(() => import('./components/pages/DraftBlogs'));
-const SavedBlogs = React.lazy(() => import('./components/pages/SavedBlogs'));
+const BookmarkedBlogs = React.lazy(() => import('./components/pages/BookmarkedBlogs'));
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
               <Route path='/read' element={<ReadBlog />} />
               <Route path='/write' element={<WriteBlog /> } />
               <Route path='/drafts' element={<DraftBlogs />}/>
-              <Route path='/saved' element={<SavedBlogs />}/> 
+              <Route path='/bookmarks' element={<BookmarkedBlogs />}/> 
             </Routes>
           </Suspense>
         </BrowserRouter>

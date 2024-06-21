@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
 import { BACKEND_URL } from './config';
+import { LoadPublish, LoadSaveDraft } from '../components/AnimatedComponents';
 
 export default function QuillEditor(){
 
@@ -16,6 +17,12 @@ export default function QuillEditor(){
     const [content, setContent] = useState(draftBlogData.content);
     const [title, setTitle] = useState(draftBlogData.title);
     const navigate = useNavigate();
+
+    const publishButtonInnerHTML = <div>Publish</div>
+    const [publishButtonData, setPublishButtonData] = useState(publishButtonInnerHTML);
+
+    const saveDraftButtonInnerHTML = <div>Save Draft</div>
+    const [saveDraftButtonData, setSaveDraftButtonData] = useState(saveDraftButtonInnerHTML);
 
     const modules = {
         toolbar: [
@@ -28,6 +35,8 @@ export default function QuillEditor(){
     }
 
     const publishPost = async() => {
+        checkTitleBody()
+        setPublishButtonData(<LoadPublish />);
         try {
             if(id) {
                 const response = await axios({
@@ -72,10 +81,14 @@ export default function QuillEditor(){
 
         } catch (err) {
             console.error(err);
+        } finally {
+            setPublishButtonData(publishButtonInnerHTML)
         }
     }
 
     const saveDraft = async() => {
+        checkTitleBody()
+        setSaveDraftButtonData(<LoadSaveDraft />)
         try {
             if(id) {
                 const response = await axios({
@@ -120,6 +133,15 @@ export default function QuillEditor(){
 
         } catch (err) {
             console.error('Error', err);
+        } finally {
+            setSaveDraftButtonData(saveDraftButtonInnerHTML)
+        }
+    }
+
+    const checkTitleBody = () => {
+        if((title.length < 1) || (content.length < 1)) {
+            alert('Title / Content cannot be empty')
+            return
         }
     }
 
@@ -153,10 +175,14 @@ export default function QuillEditor(){
     function SubmitData(){
         return <div className='flex justify-end gap-[20px] mx-[10px]'>
             <button onClick={saveDraft}>
-                <div className='bg-slate-200 py-[7px] px-[10px] w-[120px] text-black font-medium border-[3px] border-black rounded-[25px] text-[18px]'>Save Draft</div>
+                <div className='bg-slate-200 py-[7px] px-[10px] w-[120px] text-black font-medium border-[3px] border-black rounded-[25px] text-[18px]'>
+                    {saveDraftButtonData}
+                </div>
             </button>
             <button onClick={publishPost}>
-                <div className='bg-black py-[7px] px-[10px] w-[120px] text-white font-medium border-[3px] border-black rounded-[25px] text-[18px]'>Publish</div>
+                <div className='bg-black py-[7px] px-[10px] w-[120px] text-white font-medium border-[3px] border-black rounded-[25px] text-[18px]'>
+                    {publishButtonData}
+                </div>
             </button>
         </div>
     }

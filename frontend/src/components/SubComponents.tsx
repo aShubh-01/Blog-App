@@ -32,15 +32,15 @@ export function InputField({title, type, placeholder, setProperty}: InputType){
 }
 
 type ButtonType = {
-    title: string,
+    buttonContent: JSX.Element,
     onClickEvent: () => void
 }
 
-export function Button({title, onClickEvent}: ButtonType){
+export function Button({buttonContent, onClickEvent}: ButtonType){
     return <div>
         <button className='h-[50px] w-[370px] bg-black text-[20px] font-medium text-white rounded-lg'
         onClick={onClickEvent}>
-            {title}
+            {buttonContent}
         </button>
     </div>
 }
