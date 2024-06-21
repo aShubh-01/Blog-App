@@ -3,8 +3,8 @@ import { errorAtom } from '../../states/errorHandling';
 import axios from 'axios';
 import { useRecoilState } from 'recoil';
 import { useState, useEffect } from 'react';
-import { BACKEND_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import { BACKEND_URL } from '../config';
 
 export default function Signin(){
     const [username, setUsername] = useState('');

@@ -31,7 +31,6 @@ export default function DraftBlogs(){
 }
 
 interface DraftBlogCardInterface {
-    createdAt: string;
     updatedAt: string;
     title: string;
     content: string;
@@ -51,7 +50,6 @@ function AllDraftBlogs(){
         id: string,
         title: string,
         content: string
-        createdAt: string,
         updatedAt: string
     }
 
@@ -66,14 +64,14 @@ function AllDraftBlogs(){
                     });
                     navigate('/write');
                 }}>
-                    <DraftBlogCard createdAt={draft.createdAt} updatedAt={draft.updatedAt} title={draft.title} content={htmlToString(draft.content)} />
+                    <DraftBlogCard updatedAt={draft.updatedAt} title={draft.title} content={htmlToString(draft.content)} />
                 </div>
             })   
         }
     </div>
 }
 
-function DraftBlogCard({createdAt, updatedAt, title, content}: DraftBlogCardInterface){
+function DraftBlogCard({updatedAt, title, content}: DraftBlogCardInterface){
 
     const readTime = useMemo(() => {
         const words = content.split(' ').length;
@@ -90,10 +88,7 @@ function DraftBlogCard({createdAt, updatedAt, title, content}: DraftBlogCardInte
                 {readTime} min read
             </div>
             <div className='flex justify-between gap-[10px]'>
-                <div className='py-[6px] text-[15px] text-slate-700 font-medium text-center'>Created • {createdAt}</div>
-                {(createdAt != updatedAt) &&
-                    <div className='py-[6px] text-[15px] text-slate-700 font-medium text-center'>| Updated • {updatedAt}</div>
-                }
+                <div className='py-[6px] text-[15px] text-slate-700 font-medium text-center'>Last Updated • {updatedAt}</div>
             </div>
         </div>
     </div>

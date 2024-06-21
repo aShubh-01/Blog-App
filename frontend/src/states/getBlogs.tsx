@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../components/config';
-import { atom, useSetRecoilState } from 'recoil';
-
-export const postIdAtom = atom({
-    key: 'postIdAtom',
-    default: 0
-});
 
 export function useGetSavedBlogs(){
     const [savedBlogs, setSavedBlogs] = useState([]);
@@ -40,7 +34,6 @@ export function useGetSavedBlogs(){
 export function useGetBlog(postId: number){
     const [blog, setBlog] = useState();
     const [loading, setLoading] = useState(true);
-    const setPostId = useSetRecoilState(postIdAtom);
 
     useEffect(() => {
         try {
@@ -53,7 +46,6 @@ export function useGetBlog(postId: number){
                 }
             }).then((res) => {
                 setBlog(res.data.blog);
-                setPostId(0);
                 setLoading(false);
             });
 
