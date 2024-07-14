@@ -57,7 +57,7 @@ export function AppLogo(){
                 </svg>
             </div>
             <div className='text-[25px] font-mono font-bold pt-[4px]'>
-                Blog App
+                Slate
             </div>
         </div>
     </div>
